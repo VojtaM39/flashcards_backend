@@ -3,7 +3,7 @@ import FlashCardsController from '@controllers/flashcards.controller';
 import { Routes } from '@interfaces/routes.interface';
 import validationMiddleware from '@middlewares/validation.middleware';
 import authMiddleware from '@middlewares/auth.middleware';
-import { CreateFlashCardDto, UpdateFlashCardDto } from '@dtos/flashcards.dto';
+import { CreateFlashCardDto, GetFlashCardsByCollectionQueryDto, UpdateFlashCardDto } from '@dtos/flashcards.dto';
 
 class FlashcardsRoute implements Routes {
   public path = '/api/flashcards';
@@ -23,6 +23,11 @@ class FlashcardsRoute implements Routes {
       this.flashCardsController.updateFlashCard,
     );
     this.router.delete(`${this.path}/:id`, authMiddleware, this.flashCardsController.deleteFlashCard);
+    this.router.get(
+      `${this.path}/collection/:id`,
+      [authMiddleware, validationMiddleware(GetFlashCardsByCollectionQueryDto, 'query', true)],
+      this.flashCardsController.getFlashCardsByCollection,
+    );
   }
 }
 

@@ -15,7 +15,7 @@ class CollectionsRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}/user/:id`, this.collectionsController.getCollectionsByUserId);
+    this.router.get(`${this.path}/user/:id`, this.collectionsController.getCollectionsByUser);
     this.router.post(this.path, [authMiddleware, validationMiddleware(CreateCollectionDto, 'body')], this.collectionsController.createCollection);
     this.router.put(
       `${this.path}/:id`,
