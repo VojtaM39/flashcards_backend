@@ -4,13 +4,14 @@ import collectionService from '@services/collections.service';
 import { CreateCollectionDto } from '@dtos/collections.dto';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { ObjectID } from 'bson';
+import { HttpException } from '@exceptions/HttpException';
 
 class CollectionsController {
   public collectionService = new collectionService();
 
-  public getCollectionsByUser = async (req: Request, res: Response, next: NextFunction) => {
+  public getMyCollections = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
-      const userId: string = req.params.id;
+      const userId: ObjectID = req.user._id;
       const findAllUsersCollectionsData: Collection[] = await this.collectionService.findCollectionsByUserId(userId);
 
       res.status(200).json({ data: findAllUsersCollectionsData, message: 'findAllByUser' });
@@ -33,6 +34,10 @@ class CollectionsController {
 
   public updateCollection = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
+      if (!ObjectID.isValid(req.params.id)) {
+        next(new HttpException(400, 'Invalid ID'));
+      }
+
       const userId: ObjectID = req.user._id;
       const collectionId: ObjectID = new ObjectID(req.params.id);
       const collectionData: CreateCollectionDto = req.body;
@@ -46,6 +51,10 @@ class CollectionsController {
 
   public deleteCollection = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
+      if (!ObjectID.isValid(req.params.id)) {
+        next(new HttpException(400, 'Invalid ID'));
+      }
+
       const userId: ObjectID = req.user._id;
       const collectionId: ObjectID = new ObjectID(req.params.id);
 

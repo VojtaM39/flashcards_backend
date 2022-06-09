@@ -9,7 +9,7 @@ import { ObjectID } from 'bson';
 class CollectionService {
   public collections = collectionModel;
 
-  public async findCollectionsByUserId(userId: string): Promise<Collection[]> {
+  public async findCollectionsByUserId(userId: ObjectID): Promise<Collection[]> {
     if (isEmpty(userId)) throw new HttpException(400, "You're not userId");
 
     const collections: Collection[] = await this.collections.find({ user: userId });
