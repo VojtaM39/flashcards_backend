@@ -23,10 +23,10 @@ const sessionSchema: Schema = new Schema(
       required: false,
       default: true,
     },
-    max_seen: {
-      type: Number,
+    closed: {
+      type: Boolean,
       required: false,
-      default: 1,
+      default: false,
     },
   },
   { timestamps: true },

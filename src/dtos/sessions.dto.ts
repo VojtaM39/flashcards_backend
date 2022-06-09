@@ -13,6 +13,12 @@ export class CreateSessionDto {
   public random: boolean;
 }
 
+export class UpdateSessionDto {
+  @IsOptional()
+  @IsBoolean()
+  public closed: boolean;
+}
+
 export class UpdateSessionFlashCardStatDto {
   @IsMongoId()
   public session: string;

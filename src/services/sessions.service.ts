@@ -4,7 +4,7 @@ import flashcardSessionStatModel from '@models/flashcard_session_stat.model';
 import flashCardModel from '@models/flashcards.model';
 import { isEmpty } from '@utils/util';
 import { HttpException } from '@exceptions/HttpException';
-import { CreateSessionDto, UpdateSessionFlashCardStatDto } from '@dtos/sessions.dto';
+import { CreateSessionDto, UpdateSessionDto, UpdateSessionFlashCardStatDto } from '@dtos/sessions.dto';
 import { Session } from '@interfaces/session.interface';
 import { Collection } from '@interfaces/collections.interface';
 import { FlashCardSessionStat } from '@interfaces/flashcard_session_stat.interface';
@@ -32,6 +32,23 @@ class SessionService {
     return createSessionData;
   }
 
+  public async updateSession(userId: ObjectID, sessionId: ObjectID, sessionData: UpdateSessionDto): Promise<Session> {
+    if (isEmpty(sessionData)) throw new HttpException(400, "You're not sessionData");
+
+    const session: Session & Document = await this.sessions.findById(sessionId);
+
+    if (session == null) throw new HttpException(404, 'Non existent session.');
+    if (!(session.user instanceof ObjectID)) throw new HttpException(400, 'Internal error');
+    if (!session.user.equals(userId)) throw new HttpException(401, 'You are not authorized to update this session.');
+
+    if (session.closed) throw new HttpException(400, 'Session is closed');
+
+    Object.assign(session, sessionData);
+
+    await session.save();
+    return session;
+  }
+
   public async findSessionById(userId: ObjectID, sessionId: ObjectID): Promise<Session> {
     const session: Session = await this.sessions.findById(sessionId);
 
@@ -54,6 +71,8 @@ class SessionService {
     if (session === null) throw new HttpException(404, 'Session does not exist');
     if (!(session.user instanceof ObjectID)) throw new HttpException(400, 'Internal error');
     if (!session.user.equals(userId)) throw new HttpException(401, 'You are not authorized to change this session');
+
+    if (session.closed) throw new HttpException(400, 'Session is closed');
 
     let flashCardSessionStat: FlashCardSessionStat & Document = await this.flashCardSessionStats.findOne({
       session: updateSessionFlashCardStatData.session,
@@ -82,6 +101,8 @@ class SessionService {
     if (session === null) throw new HttpException(404, 'Session does not exist');
     if (!(session.user instanceof ObjectID)) throw new HttpException(400, 'Internal error');
     if (!session.user.equals(userId)) throw new HttpException(401, 'You are not authorized to view this session');
+
+    if (session.closed) throw new HttpException(400, 'Session is closed');
 
     const pipeline: Object[] = [
       {

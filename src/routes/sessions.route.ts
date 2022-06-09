@@ -3,7 +3,7 @@ import SessionsController from '@controllers/sessions.controller';
 import { Routes } from '@interfaces/routes.interface';
 import validationMiddleware from '@middlewares/validation.middleware';
 import authMiddleware from '@middlewares/auth.middleware';
-import { CreateSessionDto, UpdateSessionFlashCardStatDto } from '@dtos/sessions.dto';
+import { CreateSessionDto, UpdateSessionDto, UpdateSessionFlashCardStatDto } from '@dtos/sessions.dto';
 
 class SessionsRoute implements Routes {
   public path = '/api/sessions';
@@ -17,6 +17,7 @@ class SessionsRoute implements Routes {
   private initializeRoutes() {
     this.router.get(`${this.path}/:id`, authMiddleware, this.sessionsController.getSessionById);
     this.router.post(this.path, [authMiddleware, validationMiddleware(CreateSessionDto, 'body')], this.sessionsController.createSession);
+    this.router.put(`${this.path}/:id`, [authMiddleware, validationMiddleware(UpdateSessionDto, 'body')], this.sessionsController.updateSession);
     this.router.post(
       `${this.path}/flashcard-stat`,
       [authMiddleware, validationMiddleware(UpdateSessionFlashCardStatDto, 'body')],

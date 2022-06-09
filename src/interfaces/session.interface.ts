@@ -6,9 +6,9 @@ export interface Session {
   _id: ObjectID;
   user: User | ObjectID;
   flashcard_collection: Collection | ObjectID;
-  max_seen: Number;
   random: Boolean;
   unlimited: Boolean;
+  closed: Boolean;
   createdAt: Date;
   updatedAt: Date;
 }

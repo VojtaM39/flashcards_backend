@@ -1,7 +1,7 @@
 import sessionService from '@services/sessions.service';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { NextFunction, Response } from 'express';
-import { CreateSessionDto, UpdateSessionFlashCardStatDto } from '@dtos/sessions.dto';
+import { CreateSessionDto, UpdateSessionDto, UpdateSessionFlashCardStatDto } from '@dtos/sessions.dto';
 import { Session } from '@interfaces/session.interface';
 import { ObjectID } from 'bson';
 import { HttpException } from '@exceptions/HttpException';
@@ -18,6 +18,23 @@ class SessionsController {
       const createSessionData: Session = await this.sessionService.createSession(userId, sessionData);
 
       res.status(201).json({ data: createSessionData, message: 'created' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public updateSession = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    try {
+      if (!ObjectID.isValid(req.params.id)) {
+        next(new HttpException(400, 'Invalid ID'));
+      }
+
+      const userId: ObjectID = req.user._id;
+      const sessionId: ObjectID = new ObjectID(req.params.id);
+      const sessionData: UpdateSessionDto = req.body;
+      const updateSessionData: Session = await this.sessionService.updateSession(userId, sessionId, sessionData);
+
+      res.status(200).json({ data: updateSessionData, message: 'updated' });
     } catch (error) {
       next(error);
     }
