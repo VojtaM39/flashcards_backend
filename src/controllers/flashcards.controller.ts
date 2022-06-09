@@ -6,6 +6,7 @@ import { CreateFlashCardDto, GetFlashCardsByCollectionQueryDto, UpdateFlashCardD
 import { ObjectID } from 'bson';
 import { Paginated } from '@interfaces/paginated.interface';
 import { plainToInstance } from 'class-transformer';
+import { HttpException } from '@exceptions/HttpException';
 
 class FlashCardsController {
   static readonly DEFAULT_FLASHCARDS_PER_PAGE = 30;
@@ -14,6 +15,10 @@ class FlashCardsController {
 
   public getFlashCard = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
+      if (!ObjectID.isValid(req.params.id)) {
+        next(new HttpException(400, 'Invalid ID'));
+      }
+
       const flashCardId: ObjectID = new ObjectID(req.params.id);
       const userId: ObjectID = req.user._id;
 
@@ -39,6 +44,10 @@ class FlashCardsController {
 
   public updateFlashCard = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
+      if (!ObjectID.isValid(req.params.id)) {
+        next(new HttpException(400, 'Invalid ID'));
+      }
+
       const userId: ObjectID = req.user._id;
       const flashCardId: ObjectID = new ObjectID(req.params.id);
       const flashCardData: UpdateFlashCardDto = req.body;
@@ -52,6 +61,10 @@ class FlashCardsController {
 
   public deleteFlashCard = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
+      if (!ObjectID.isValid(req.params.id)) {
+        next(new HttpException(400, 'Invalid ID'));
+      }
+
       const userId: ObjectID = req.user._id;
       const flashCardId: ObjectID = new ObjectID(req.params.id);
 
@@ -64,6 +77,10 @@ class FlashCardsController {
 
   public getFlashCardsByCollection = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
+      if (!ObjectID.isValid(req.params.id)) {
+        next(new HttpException(400, 'Invalid ID'));
+      }
+
       const collectionId: ObjectID = new ObjectID(req.params.id);
       const userId: ObjectID = req.user._id;
       const flashCardsByCollectionData: GetFlashCardsByCollectionQueryDto = plainToInstance(GetFlashCardsByCollectionQueryDto, req.query);

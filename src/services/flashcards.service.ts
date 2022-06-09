@@ -20,7 +20,7 @@ class FlashCardService {
     if (flashCard.parent_collection instanceof ObjectID) throw new HttpException(400, 'Internal error');
     if (!(flashCard.parent_collection.user instanceof ObjectID)) throw new HttpException(400, 'Internal error');
 
-    if (flashCard.parent_collection.user.equals(userId)) throw new HttpException(401, 'You are not authorized to view this flashcard');
+    if (!flashCard.parent_collection.user.equals(userId)) throw new HttpException(401, 'You are not authorized to view this flashcard');
 
     return flashCard;
   }
@@ -49,7 +49,7 @@ class FlashCardService {
     if (flashCard.parent_collection instanceof ObjectID) throw new HttpException(400, 'Internal error');
     if (!(flashCard.parent_collection.user instanceof ObjectID)) throw new HttpException(400, 'Internal error');
 
-    if (flashCard.parent_collection.user.equals(userId)) throw new HttpException(401, 'You are not authorized to modify this flashcard');
+    if (!flashCard.parent_collection.user.equals(userId)) throw new HttpException(401, 'You are not authorized to modify this flashcard');
 
     Object.assign(flashCard, flashCardData);
     await flashCard.save();
@@ -64,7 +64,7 @@ class FlashCardService {
     if (flashCard.parent_collection instanceof ObjectID) throw new HttpException(400, 'Internal error');
     if (!(flashCard.parent_collection.user instanceof ObjectID)) throw new HttpException(400, 'Internal error');
 
-    if (flashCard.parent_collection.user.equals(userId)) throw new HttpException(401, 'You are not authorized to delete this flashcard');
+    if (!flashCard.parent_collection.user.equals(userId)) throw new HttpException(401, 'You are not authorized to delete this flashcard');
 
     await flashCard.delete();
 
