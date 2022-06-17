@@ -41,6 +41,14 @@ class AuthController {
       next(error);
     }
   };
+
+  public getAuthenticatedUser = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    try {
+      res.status(200).json({ data: req.user, message: 'authenticatedUser' });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default AuthController;
