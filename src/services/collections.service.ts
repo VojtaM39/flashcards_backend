@@ -4,15 +4,37 @@ import { CreateCollectionDto } from '@dtos/collections.dto';
 import { HttpException } from '@exceptions/HttpException';
 import { Collection } from '@interfaces/collections.interface';
 import collectionModel from '@models/collections.model';
+import flashcardsModel from '@models/flashcards.model';
 import { ObjectID } from 'bson';
 
 class CollectionService {
   public collections = collectionModel;
+  public flashcards = flashcardsModel;
 
   public async findCollectionsByUserId(userId: ObjectID): Promise<Collection[]> {
     if (isEmpty(userId)) throw new HttpException(400, "You're not userId");
 
-    const collections: Collection[] = await this.collections.find({ user: userId });
+    const collections: Collection[] = await this.collections.aggregate([
+      {
+        $match: { user: userId },
+      },
+      {
+        $lookup: {
+          from: this.flashcards.collection.name,
+          localField: '_id',
+          foreignField: 'parent_collection',
+          as: 'flashcards',
+        },
+      },
+      {
+        $set: {
+          count: { $size: { $ifNull: ['$flashcards', []] } },
+        },
+      },
+      {
+        $unset: 'flashcards',
+      },
+    ]);
 
     return collections;
   }

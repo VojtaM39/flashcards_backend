@@ -5,6 +5,7 @@ export interface Collection {
   _id: ObjectID;
   user: ObjectID | User;
   name: string;
+  count: number;
   createdAt: Date;
   updatedAt: Date;
 }
