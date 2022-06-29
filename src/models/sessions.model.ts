@@ -13,7 +13,7 @@ const sessionSchema: Schema = new Schema(
       required: true,
       ref: 'Collection',
     },
-    unlimited: {
+    infinite: {
       type: Boolean,
       required: false,
       default: false,
@@ -22,6 +22,16 @@ const sessionSchema: Schema = new Schema(
       type: Boolean,
       required: false,
       default: true,
+    },
+    correct: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    total: {
+      type: Number,
+      required: false,
+      default: 0,
     },
     closed: {
       type: Boolean,

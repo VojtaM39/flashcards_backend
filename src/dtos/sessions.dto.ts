@@ -6,7 +6,7 @@ export class CreateSessionDto {
 
   @IsOptional()
   @IsBoolean()
-  public unlimited: boolean;
+  public infinite: boolean;
 
   @IsOptional()
   @IsBoolean()

@@ -7,8 +7,10 @@ export interface Session {
   user: User | ObjectID;
   flashcard_collection: Collection | ObjectID;
   random: Boolean;
-  unlimited: Boolean;
+  infinite: Boolean;
   closed: Boolean;
+  correct: number;
+  total: number;
   createdAt: Date;
   updatedAt: Date;
 }

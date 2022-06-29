@@ -1,11 +1,12 @@
 import { Document } from 'mongoose';
+import { ObjectID } from 'bson';
 import { isEmpty } from '@utils/util';
 import { CreateCollectionDto } from '@dtos/collections.dto';
 import { HttpException } from '@exceptions/HttpException';
 import { Collection } from '@interfaces/collections.interface';
 import collectionModel from '@models/collections.model';
 import flashcardsModel from '@models/flashcards.model';
-import { ObjectID } from 'bson';
+import { FlashCard } from '@interfaces/flashcards.interface';
 
 class CollectionService {
   public collections = collectionModel;
@@ -17,6 +18,11 @@ class CollectionService {
     const collections: Collection[] = await this.collections.aggregate([
       {
         $match: { user: userId },
+      },
+      {
+        $sort: {
+          _id: -1,
+        },
       },
       {
         $lookup: {
@@ -37,6 +43,19 @@ class CollectionService {
     ]);
 
     return collections;
+  }
+
+  public async findCollectionById(userId: ObjectID, collectionId: ObjectID): Promise<Collection> {
+    if (isEmpty(userId)) throw new HttpException(400, "You're not userId");
+    if (isEmpty(collectionId)) throw new HttpException(400, "You're not collectionId");
+
+    const collection: Collection = await this.collections.findById(collectionId);
+    if (collection === null) throw new HttpException(404, 'Collection does not exist');
+    if (!(collection.user instanceof ObjectID)) throw new HttpException(400, 'Internal error');
+
+    if (!collection.user.equals(userId)) throw new HttpException(401, 'You are not authorized to view this collection');
+
+    return collection;
   }
 
   public async createCollection(userId: ObjectID, collectionData: CreateCollectionDto): Promise<Collection> {

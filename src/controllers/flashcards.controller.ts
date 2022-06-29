@@ -84,7 +84,6 @@ class FlashCardsController {
       const collectionId: ObjectID = new ObjectID(req.params.id);
       const userId: ObjectID = req.user._id;
       const flashCardsByCollectionData: GetFlashCardsByCollectionQueryDto = plainToInstance(GetFlashCardsByCollectionQueryDto, req.query);
-      console.log(flashCardsByCollectionData);
 
       const findFlashCardsByCollectionData: Paginated<FlashCard> = await this.flashCardService.findFlashCardsByCollectionId(
         collectionId,

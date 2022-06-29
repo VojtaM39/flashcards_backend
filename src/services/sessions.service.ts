@@ -66,7 +66,7 @@ class SessionService {
     if (!ObjectID.isValid(updateSessionFlashCardStatData.session)) throw new HttpException(400, 'Invalid session ID');
     if (!ObjectID.isValid(updateSessionFlashCardStatData.flashcard)) throw new HttpException(400, 'Invalid flashcard ID');
 
-    const session: Session = await this.sessions.findById(updateSessionFlashCardStatData.session);
+    const session: Session & Document = await this.sessions.findById(updateSessionFlashCardStatData.session);
 
     if (session === null) throw new HttpException(404, 'Session does not exist');
     if (!(session.user instanceof ObjectID)) throw new HttpException(400, 'Internal error');
@@ -91,6 +91,15 @@ class SessionService {
     if (updateSessionFlashCardStatData.correct) flashCardSessionStat.correct += 1;
 
     await flashCardSessionStat.save();
+
+    // Update session correct and total fields
+    session.total += 1;
+    if (updateSessionFlashCardStatData.correct) session.correct += 1;
+
+    await session.save();
+
+    // Return FlashcardSessionStat with populated session
+    flashCardSessionStat.session = session;
 
     return flashCardSessionStat;
   }
@@ -130,7 +139,7 @@ class SessionService {
     ];
 
     // Only flashcards, that have not been answered correctly yet
-    if (!session.unlimited) pipeline.push({ $match: { 'stats.correct': 0 } });
+    if (!session.infinite) pipeline.push({ $match: { 'stats.correct': 0 } });
 
     if (session.random) pipeline.push({ $sample: { size: 1 } });
     else pipeline.push({ $sort: { 'stats.total': 1, _id: 1 } });

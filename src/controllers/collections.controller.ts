@@ -20,6 +20,22 @@ class CollectionsController {
     }
   };
 
+  public getCollection = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    try {
+      if (!ObjectID.isValid(req.params.id)) {
+        next(new HttpException(400, 'Invalid ID'));
+      }
+
+      const userId: ObjectID = req.user._id;
+      const collectionId: ObjectID = new ObjectID(req.params.id);
+      const findCollectionData: Collection = await this.collectionService.findCollectionById(userId, collectionId);
+
+      res.status(200).json({ data: findCollectionData, message: 'findById' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public createCollection = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
       const userId: ObjectID = req.user._id;
