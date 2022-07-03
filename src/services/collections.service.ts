@@ -6,13 +6,14 @@ import { HttpException } from '@exceptions/HttpException';
 import { Collection } from '@interfaces/collections.interface';
 import collectionModel from '@models/collections.model';
 import flashcardsModel from '@models/flashcards.model';
+import { Paginated } from '@interfaces/paginated.interface';
 import { FlashCard } from '@interfaces/flashcards.interface';
 
 class CollectionService {
   public collections = collectionModel;
   public flashcards = flashcardsModel;
 
-  public async findCollectionsByUserId(userId: ObjectID): Promise<Collection[]> {
+  public async findCollectionsByUserId(userId: ObjectID, page: number, perPage: number): Promise<Paginated<Collection>> {
     if (isEmpty(userId)) throw new HttpException(400, "You're not userId");
 
     const collections: Collection[] = await this.collections.aggregate([
@@ -23,6 +24,12 @@ class CollectionService {
         $sort: {
           _id: -1,
         },
+      },
+      {
+        $skip: (page - 1) * perPage,
+      },
+      {
+        $limit: perPage,
       },
       {
         $lookup: {
@@ -42,7 +49,17 @@ class CollectionService {
       },
     ]);
 
-    return collections;
+    const itemsCount = await this.collections.find({ user: { $eq: userId } }).count();
+
+    const paginatedResult: Paginated<Collection> = {
+      items: collections,
+      page: page,
+      total_pages: Math.ceil(itemsCount / perPage),
+      per_page: perPage,
+      total_items_count: itemsCount,
+    };
+
+    return paginatedResult;
   }
 
   public async findCollectionById(userId: ObjectID, collectionId: ObjectID): Promise<Collection> {

@@ -1,10 +1,12 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { Collection } from '@interfaces/collections.interface';
 import collectionService from '@services/collections.service';
-import { CreateCollectionDto } from '@dtos/collections.dto';
+import { CreateCollectionDto, GetAuthCollectionsQueryDto } from '@dtos/collections.dto';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { ObjectID } from 'bson';
 import { HttpException } from '@exceptions/HttpException';
+import { plainToInstance } from 'class-transformer';
+import { Paginated } from '@interfaces/paginated.interface';
 
 class CollectionsController {
   public collectionService = new collectionService();
@@ -12,9 +14,14 @@ class CollectionsController {
   public getMyCollections = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
       const userId: ObjectID = req.user._id;
-      const findAllUsersCollectionsData: Collection[] = await this.collectionService.findCollectionsByUserId(userId);
+      const authCollectionsData: GetAuthCollectionsQueryDto = plainToInstance(GetAuthCollectionsQueryDto, req.query);
+      const findPaginatedUsersCollectionsData: Paginated<Collection> = await this.collectionService.findCollectionsByUserId(
+        userId,
+        authCollectionsData.page,
+        authCollectionsData.per_page,
+      );
 
-      res.status(200).json({ data: findAllUsersCollectionsData, message: 'findAllByUser' });
+      res.status(200).json({ data: findPaginatedUsersCollectionsData, message: 'findPaginatedByUser' });
     } catch (error) {
       next(error);
     }

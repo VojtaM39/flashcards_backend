@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import CollectionsController from '@controllers/collections.controller';
 import { Routes } from '@interfaces/routes.interface';
-import { CreateCollectionDto } from '@dtos/collections.dto';
+import { CreateCollectionDto, GetAuthCollectionsQueryDto } from '@dtos/collections.dto';
 import validationMiddleware from '@middlewares/validation.middleware';
 import authMiddleware from '@middlewares/auth.middleware';
 
@@ -15,7 +15,11 @@ class CollectionsRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}/user/me`, authMiddleware, this.collectionsController.getMyCollections);
+    this.router.get(
+      `${this.path}/user/me`,
+      [authMiddleware, validationMiddleware(GetAuthCollectionsQueryDto, 'query', true)],
+      this.collectionsController.getMyCollections,
+    );
     this.router.get(`${this.path}/:id`, authMiddleware, this.collectionsController.getCollection);
     this.router.post(this.path, [authMiddleware, validationMiddleware(CreateCollectionDto, 'body')], this.collectionsController.createCollection);
     this.router.put(
