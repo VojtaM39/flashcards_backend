@@ -11,6 +11,7 @@ import { FlashCardSessionStat } from '@interfaces/flashcard_session_stat.interfa
 import { ObjectID } from 'bson';
 import { Document } from 'mongoose';
 import { FlashCard } from '@interfaces/flashcards.interface';
+import { SessionReview } from '@interfaces/session_review.interface';
 
 class SessionService {
   public sessions = sessionModel;
@@ -150,6 +151,22 @@ class SessionService {
     if (result.length > 0) return result[0];
 
     return null;
+  }
+
+  public async getSessionReview(userId: ObjectID, sessionId: ObjectID): Promise<SessionReview> {
+    const session: Session = await this.sessions.findById(sessionId);
+
+    if (session === null) throw new HttpException(404, 'Session does not exist');
+    if (!(session.user instanceof ObjectID)) throw new HttpException(400, 'Internal error');
+    if (!session.user.equals(userId)) throw new HttpException(401, "You are not authorized to view this session's review");
+
+    const learnedFlashcardsCount: number = await this.flashCardSessionStats.countDocuments({ session: sessionId, correct: { $gt: 0 } });
+    const totalFlashcards: number = await this.flashCards.countDocuments({ parent_collection: session.flashcard_collection });
+
+    return {
+      session: session,
+      learned_percentage: Math.round((learnedFlashcardsCount / totalFlashcards) * 100),
+    };
   }
 }
 

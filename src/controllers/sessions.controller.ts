@@ -7,6 +7,7 @@ import { ObjectID } from 'bson';
 import { HttpException } from '@exceptions/HttpException';
 import { FlashCardSessionStat } from '@interfaces/flashcard_session_stat.interface';
 import { FlashCard } from '@interfaces/flashcards.interface';
+import { SessionReview } from '@interfaces/session_review.interface';
 
 class SessionsController {
   public sessionService = new sessionService();
@@ -84,6 +85,23 @@ class SessionsController {
       const flashCardData: FlashCard = await this.sessionService.getSessionNextFlashcard(userId, sessionId);
 
       res.status(201).json({ data: flashCardData, message: 'nextFlashcard' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getSessionReview = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    try {
+      if (!ObjectID.isValid(req.params.id)) {
+        next(new HttpException(400, 'Invalid ID'));
+      }
+
+      const userId: ObjectID = req.user._id;
+      const sessionId: ObjectID = new ObjectID(req.params.id);
+
+      const sessionReviewData: SessionReview = await this.sessionService.getSessionReview(userId, sessionId);
+
+      res.status(200).json({ data: sessionReviewData, message: 'sessionReview' });
     } catch (error) {
       next(error);
     }

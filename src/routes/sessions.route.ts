@@ -24,6 +24,7 @@ class SessionsRoute implements Routes {
       this.sessionsController.updateSessionFlashCardStat,
     );
     this.router.get(`${this.path}/flashcard/:id`, authMiddleware, this.sessionsController.getNextFlashcard);
+    this.router.get(`${this.path}/review/:id`, authMiddleware, this.sessionsController.getSessionReview);
   }
 }
 

@@ -1,13 +1,15 @@
-import { IsMongoId, IsNumber, IsOptional, IsString, Min, Max } from 'class-validator';
+import { IsMongoId, IsNumber, IsOptional, IsString, Min, Max, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { toNumber } from '@utils/cast';
 import FlashcardsConstants from '@/constants/flashcards.constants';
 
 export class CreateFlashCardDto {
   @IsString()
+  @Length(3)
   public question: string;
 
   @IsString()
+  @Length(3)
   public answer: string;
 
   @IsMongoId()
