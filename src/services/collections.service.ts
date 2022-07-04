@@ -1,21 +1,17 @@
 import { Document } from 'mongoose';
 import { ObjectID } from 'bson';
-import { isEmpty } from '@utils/util';
 import { CreateCollectionDto } from '@dtos/collections.dto';
 import { HttpException } from '@exceptions/HttpException';
 import { Collection } from '@interfaces/collections.interface';
 import collectionModel from '@models/collections.model';
 import flashcardsModel from '@models/flashcards.model';
 import { Paginated } from '@interfaces/paginated.interface';
-import { FlashCard } from '@interfaces/flashcards.interface';
 
 class CollectionService {
   public collections = collectionModel;
   public flashcards = flashcardsModel;
 
   public async findCollectionsByUserId(userId: ObjectID, page: number, perPage: number): Promise<Paginated<Collection>> {
-    if (isEmpty(userId)) throw new HttpException(400, "You're not userId");
-
     const collections: Collection[] = await this.collections.aggregate([
       {
         $match: { user: userId },
@@ -51,21 +47,16 @@ class CollectionService {
 
     const itemsCount = await this.collections.find({ user: { $eq: userId } }).count();
 
-    const paginatedResult: Paginated<Collection> = {
+    return {
       items: collections,
       page: page,
       total_pages: Math.ceil(itemsCount / perPage),
       per_page: perPage,
       total_items_count: itemsCount,
     };
-
-    return paginatedResult;
   }
 
   public async findCollectionById(userId: ObjectID, collectionId: ObjectID): Promise<Collection> {
-    if (isEmpty(userId)) throw new HttpException(400, "You're not userId");
-    if (isEmpty(collectionId)) throw new HttpException(400, "You're not collectionId");
-
     const collection: Collection = await this.collections.findById(collectionId);
     if (collection === null) throw new HttpException(404, 'Collection does not exist');
     if (!(collection.user instanceof ObjectID)) throw new HttpException(400, 'Internal error');
@@ -76,16 +67,10 @@ class CollectionService {
   }
 
   public async createCollection(userId: ObjectID, collectionData: CreateCollectionDto): Promise<Collection> {
-    if (isEmpty(collectionData)) throw new HttpException(400, "You're not collectionData");
-
-    const createCollectionData: Collection = await this.collections.create({ ...collectionData, user: userId });
-
-    return createCollectionData;
+    return this.collections.create({ ...collectionData, user: userId });
   }
 
   public async updateCollection(userId: ObjectID, collectionId: ObjectID, collectionData: CreateCollectionDto): Promise<Collection> {
-    if (isEmpty(collectionData)) throw new HttpException(400, "You're not collectionData");
-
     const collection: Collection & Document = await this.collections.findById(collectionId);
 
     if (collection === null) throw new HttpException(404, 'Collection does not exist');

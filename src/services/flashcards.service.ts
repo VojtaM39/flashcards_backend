@@ -3,7 +3,6 @@ import collectionModel from '@models/collections.model';
 import { HttpException } from '@exceptions/HttpException';
 import { Document } from 'mongoose';
 import { FlashCard } from '@interfaces/flashcards.interface';
-import { isEmpty } from '@utils/util';
 import { CreateFlashCardDto, UpdateFlashCardDto } from '@dtos/flashcards.dto';
 import { Collection } from '@interfaces/collections.interface';
 import { ObjectID } from 'bson';
@@ -26,8 +25,6 @@ class FlashCardService {
   }
 
   public async createFlashCard(userId: ObjectID, flashCardData: CreateFlashCardDto): Promise<FlashCard> {
-    if (isEmpty(flashCardData)) throw new HttpException(400, "You're not flashCardData");
-
     const collection: Collection = await this.collections.findById(flashCardData.parent_collection);
 
     if (collection === null) throw new HttpException(400, 'Collection is non existent');
@@ -35,14 +32,10 @@ class FlashCardService {
 
     if (!collection.user.equals(userId)) throw new HttpException(401, 'User is not owner of the collection');
 
-    const createFlashCardData: FlashCard = await this.flashCards.create({ ...flashCardData });
-
-    return createFlashCardData;
+    return this.flashCards.create({ ...flashCardData });
   }
 
   public async updateFlashCard(userId: ObjectID, flashCardId: ObjectID, flashCardData: UpdateFlashCardDto): Promise<FlashCard> {
-    if (isEmpty(flashCardData)) throw new HttpException(400, "You're not flashCardData");
-
     const flashCard: FlashCard & Document = await this.flashCards.findById(flashCardId).populate('parent_collection');
 
     if (flashCard === null) throw new HttpException(404, 'Flashcard does not exist');
@@ -86,15 +79,13 @@ class FlashCardService {
 
     const itemsCount = await this.flashCards.find({ parent_collection: { $eq: collection._id } }).count();
 
-    const paginatedResult: Paginated<FlashCard> = {
+    return {
       items: flashcards,
       page: page,
       total_pages: Math.ceil(itemsCount / perPage),
       per_page: perPage,
       total_items_count: itemsCount,
     };
-
-    return paginatedResult;
   }
 }
 

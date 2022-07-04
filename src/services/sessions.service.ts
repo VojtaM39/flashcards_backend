@@ -2,7 +2,6 @@ import sessionModel from '@models/sessions.model';
 import collectionModel from '@models/collections.model';
 import flashcardSessionStatModel from '@models/flashcard_session_stat.model';
 import flashCardModel from '@models/flashcards.model';
-import { isEmpty } from '@utils/util';
 import { HttpException } from '@exceptions/HttpException';
 import { CreateSessionDto, UpdateSessionDto, UpdateSessionFlashCardStatDto } from '@dtos/sessions.dto';
 import { Session } from '@interfaces/session.interface';
@@ -20,22 +19,16 @@ class SessionService {
   public flashCards = flashCardModel;
 
   public async createSession(userId: ObjectID, sessionData: CreateSessionDto): Promise<Session> {
-    if (isEmpty(sessionData)) throw new HttpException(400, "You're not sessionData");
-
     const collection: Collection = await this.collections.findById(sessionData.flashcard_collection);
 
     if (collection == null) throw new HttpException(404, 'Non existent collection.');
     if (!(collection.user instanceof ObjectID)) throw new HttpException(400, 'Internal error');
     if (!collection.user.equals(userId)) throw new HttpException(401, 'You are not authorized to create session with this collection.');
 
-    const createSessionData: Session = await this.sessions.create({ ...sessionData, user: userId, flashcard_stats: [] });
-
-    return createSessionData;
+    return this.sessions.create({ ...sessionData, user: userId, flashcard_stats: [] });
   }
 
   public async updateSession(userId: ObjectID, sessionId: ObjectID, sessionData: UpdateSessionDto): Promise<Session> {
-    if (isEmpty(sessionData)) throw new HttpException(400, "You're not sessionData");
-
     const session: Session & Document = await this.sessions.findById(sessionId);
 
     if (session == null) throw new HttpException(404, 'Non existent session.');
@@ -64,9 +57,6 @@ class SessionService {
     userId: ObjectID,
     updateSessionFlashCardStatData: UpdateSessionFlashCardStatDto,
   ): Promise<FlashCardSessionStat> {
-    if (!ObjectID.isValid(updateSessionFlashCardStatData.session)) throw new HttpException(400, 'Invalid session ID');
-    if (!ObjectID.isValid(updateSessionFlashCardStatData.flashcard)) throw new HttpException(400, 'Invalid flashcard ID');
-
     const session: Session & Document = await this.sessions.findById(updateSessionFlashCardStatData.session);
 
     if (session === null) throw new HttpException(404, 'Session does not exist');
