@@ -1,12 +1,11 @@
 version: '3.7'
 
 services:
-  server:
+  flashcards_backend:
     build:
       context: ./
       target: production-build-stage
       dockerfile: Dockerfile
-    container_name: flashcards_backend
     ports:
       - '3000:3000'
     volumes:
@@ -25,8 +24,8 @@ services:
 
 networks:
   default:
-    external:
-      name: flashcardsnetwork
+    name: flashcardsnetwork
+    external: true
 
 volumes:
   data:
