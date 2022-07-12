@@ -1,8 +1,8 @@
 {
-  "name": "example-app",
+  "name": "flashcards_backend",
   "version": "0.0.0",
-  "description": "TypeScript + Mongoose + MongoDB + Express API Server",
-  "author": "",
+  "description": "Flashcards app API server",
+  "author": "Vojtech Maslan",
   "license": "ISC",
   "scripts": {
     "start": "npm run build && cross-env NODE_ENV=production node dist/server.js",
@@ -28,16 +28,16 @@
     "helmet": "^4.6.0",
     "hpp": "^0.2.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.1",
+    "mongoose": "^6.4.4",
     "morgan": "^1.10.0",
     "swagger-jsdoc": "^6.0.0",
     "swagger-ui-express": "^4.1.6",
-    "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.5"
+    "winston": "^3.8.1",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@swc/cli": "^0.1.51",
-    "@swc/core": "^1.2.108",
+    "@swc/core": "^1.2.212",
     "@types/bcrypt": "^5.0.0",
     "@types/compression": "^1.7.1",
     "@types/cookie-parser": "^1.4.2",
@@ -48,7 +48,7 @@
     "@types/jsonwebtoken": "^8.5.4",
     "@types/mongoose": "^5.10.1",
     "@types/morgan": "^1.9.3",
-    "@types/node": "^16.0.1",
+    "@types/node": "^16.11.43",
     "@types/supertest": "^2.0.11",
     "@types/swagger-jsdoc": "^6.0.1",
     "@types/swagger-ui-express": "^4.1.3",
@@ -63,14 +63,14 @@
     "lint-staged": "^11.0.0",
     "node-config": "^0.0.2",
     "node-gyp": "^8.1.0",
-    "nodemon": "^2.0.9",
+    "nodemon": "^2.0.19",
     "pm2": "^5.1.0",
-    "prettier": "^2.3.2",
-    "supertest": "^6.2.2",
+    "prettier": "^2.7.1",
+    "supertest": "^6.2.4",
     "ts-jest": "^27.1.4",
-    "ts-node": "^10.4.0",
-    "tsc-alias": "^1.4.1",
+    "ts-node": "^10.8.2",
+    "tsc-alias": "^1.6.11",
     "tsconfig-paths": "^3.10.1",
-    "typescript": "^4.5.2"
+    "typescript": "^4.7.4"
   }
 }
