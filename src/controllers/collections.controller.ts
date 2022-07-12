@@ -1,6 +1,6 @@
 import { NextFunction, Response } from 'express';
 import { Collection } from '@interfaces/collections.interface';
-import collectionService from '@services/collections.service';
+import CollectionService from '@services/collections.service';
 import { CreateCollectionDto, GetAuthCollectionsQueryDto } from '@dtos/collections.dto';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { ObjectID } from 'bson';
@@ -9,7 +9,7 @@ import { plainToInstance } from 'class-transformer';
 import { Paginated } from '@interfaces/paginated.interface';
 
 class CollectionsController {
-  public collectionService = new collectionService();
+  public collectionService = new CollectionService();
 
   public getMyCollections = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {

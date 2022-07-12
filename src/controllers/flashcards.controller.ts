@@ -1,4 +1,4 @@
-import flashCardService from '@services/flashcards.service';
+import FlashCardService from '@services/flashcards.service';
 import { NextFunction, Response } from 'express';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { FlashCard } from '@interfaces/flashcards.interface';
@@ -11,7 +11,7 @@ import { HttpException } from '@exceptions/HttpException';
 class FlashCardsController {
   static readonly DEFAULT_FLASHCARDS_PER_PAGE = 30;
 
-  public flashCardService = new flashCardService();
+  public flashCardService = new FlashCardService();
 
   public getFlashCard = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {

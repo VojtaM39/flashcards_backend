@@ -1,4 +1,4 @@
-import sessionService from '@services/sessions.service';
+import SessionService from '@services/sessions.service';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { NextFunction, Response } from 'express';
 import { CreateSessionDto, UpdateSessionDto, UpdateSessionFlashCardStatDto } from '@dtos/sessions.dto';
@@ -10,7 +10,7 @@ import { FlashCard } from '@interfaces/flashcards.interface';
 import { SessionReview } from '@interfaces/session_review.interface';
 
 class SessionsController {
-  public sessionService = new sessionService();
+  public sessionService = new SessionService();
 
   public createSession = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
